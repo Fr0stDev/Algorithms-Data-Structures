@@ -18,7 +18,9 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 	//part of pre: 0 <= row < ROW_COUNT && 0 <= column < COLUMN_COUNT
 	//part of post: rv == null <==> the (row, column) spot on the board is empty
 	public Mark getMark(int row, int column) {
-		
+	
+		assert row < ROW_COUNT;
+		assert column < COLUMN_COUNT;
 		//Formula to calculate the index of the row and column in the array
 		
 		// This is array index
@@ -26,27 +28,34 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 		// 3|4|5
 		// 6|7|8
 		
-		int arrayIndex = column + (row * COLUMN_COUNT);
+		int gridPosition = column + (row * COLUMN_COUNT);
 		
 		/*
 		 * Retrieves the position of a mark at the given array index
 		 * 
 		 * i.e : 
 		 * 
-		 * arrayIndex = 2
-		 * array = {1,5,4,3,7,2,8,2}
+		 * gridPosition = 2
+		 * 
+		 * _|_|gp
+		 * _|_|_
+		 *  | |
+		 * 
+		 * x,o,x,o,x,o,x,o,x
+		 * array = {1,5,4,3,7,2,8,0,-1}
+		 * 
 		 * 
 		 * indexOfMatch(array, arrayIndex) -> returns 5
 		 * 
-		 * 5 is the position of the "O" on the board
-		 * 
-		 * _|_| 
-		 * _|_|O
+		 * _|_|o
+		 * _|_|_
 		 *  | |
+		 *
+		 * 
 		 * 
 		 */
 		
-		int markIndex = indexOfMatch(movesArray, arrayIndex);
+		int markIndex = indexOfMatch(movesArray, gridPosition);
 		
 		//If it returns -1, there is no mark.
 		if (markIndex == NO_MOVE) {
@@ -65,6 +74,10 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 	//part of pre: getMark(row, column) == null
 	//part of pre: !isGameOver
 	public void setMark(int row, int column) {
+		
+		assert getMark(row,column) == null;
+		assert row < ROW_COUNT;
+		assert column < COLUMN_COUNT;
 		
 		assert isGameOver() == false;
 		
@@ -124,7 +137,7 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 	//part of post: rv == null <==> neither player won (game is a tie)
 	public Mark getWinner() {
 		
-		assert isGameOver() == true;
+		assert isGameOver();
 		
 		if (gameState() == 1) {
 			return Mark.X;
@@ -155,17 +168,7 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 		int gameOverWinnerO = 2;
 		int gameOverTie     = 3;
 		
-		boolean foundNoMove = false;
-		for (int i = 0; i < movesArray.length; i++) {
-			if (movesArray[i] == NO_MOVE) {
-				foundNoMove = true;
-				break;
-			}
-		}
 		
-		if (!foundNoMove) {
-			return gameOverTie;
-		}
 		
 		//Win Vertically 
 		// 0 3 6 , 1 4 7 , 2 5 8
@@ -333,6 +336,22 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 			}
 		}
 		
+		// If there are no moves left, and there is no winner, game ends inn a tie 
+		
+		boolean foundNoMove = false;
+		for (int i = 0; i < movesArray.length; i++) {
+			if (movesArray[i] == NO_MOVE) {
+				foundNoMove = true;
+				break;
+			}
+		}
+		
+		if (!foundNoMove && !hasFoundWinner) {
+			return gameOverTie;
+		}
+		
+		// If there is no winner and there are still moves left, game is not over
+		
 		return gameNotOver;
 		
 	}
@@ -360,7 +379,6 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 
         return areEqual;
     }
-
 	
 	public String toString() { 
 		
@@ -419,24 +437,24 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 		
 		// Horizontal Test
 		
-		
+		/*
 		board.setMark(0, 0); //X
 		board.setMark(1, 0); //O
 		board.setMark(0, 1); //X
 		board.setMark(1, 2); //O
 		board.setMark(0, 2); //X
-		
+		*/
 		
 		
 		//board.setMark(1, 1);
 		// Vertical Test 
-		/*
+		
 		board.setMark(0, 0); //X
 		board.setMark(0, 1); //O
 		board.setMark(1, 0); //X
 		board.setMark(0, 2); //O
 		board.setMark(2, 0); //X
-		*/
+		
 		
 		// Diagonal Test "\"
 		
@@ -479,6 +497,8 @@ public class TicTacToeBoardImpl_Moran implements TicTacToeBoard {
 		board.setMark(8, 0);
 		board.setMark(8, 8);
 		*/
+		
+		
 		      
 	    String s = board.toString();
 	    System.out.println(s);
